@@ -46,11 +46,18 @@ src/
 ## Color (importante)
 
 Toda la paleta vive en `src/index.css` como variables `--c-*` en formato **canal
-RGB** (`"37 99 235"`). Tailwind las consume con `rgb(var(--c-x) / <alpha-value>)`,
+RGB** (`"13 94 88"`). Tailwind las consume con `rgb(var(--c-x) / <alpha-value>)`,
 así que `bg-primary`, `text-ink`, `bg-primary/10`, etc. funcionan.
 
-Para reshadear la web entera: cambiar ~10 líneas del `:root`. Hay 2 variantes de
-ejemplo comentadas en el archivo (B "clínica cálida", C "azul noche").
+**Paleta activa: petróleo + arena + cobre.** Para reshadear: cambiar ~10 líneas del
+`:root`. Hay 2 variantes de ejemplo comentadas (A "azul confianza", C "azul noche").
+
+## framer-motion — regla dura
+
+**No anidar `AnimatePresence mode="wait"`.** Rompe el árbol. Las transiciones de
+página son solo `initial`/`animate` al montar (`PageTransition`), sin `exit` y sin
+`AnimatePresence` a nivel de ruta. Chatbot y menú móvil usan `AnimatePresence` en
+modo por defecto (sync) y van bien porque están fuera de las rutas.
 
 ## Animación
 
@@ -59,14 +66,18 @@ ejemplo comentadas en el archivo (B "clínica cálida", C "azul noche").
 - `Reveal` usa `viewport={{ once: true }}` — el contenido queda visible tras la
   primera aparición; no re-anima al volver a hacer scroll.
 
-## Pendiente (iterar página a página)
+## Estado
 
-- [ ] Elegir paleta definitiva (ver recomendaciones que te pasé en el chat).
-- [ ] Página **Servicios** (detalle de cada uno).
-- [ ] Página **Monturas** (grid + filtros hombre/mujer/niño/sol, imágenes de muestra).
-- [ ] Página **Sobre nosotros** (historia, equipo, valores).
-- [ ] Página **Pide cita** (formulario UI: nombre, teléfono, email, servicio, fecha).
-- [ ] Página **Contacto** (mapa placeholder, horario, WhatsApp, dirección).
-- [ ] Rellenar `[ciudad]`, `[teléfono]`, `[TU ESTUDIO]`, año de fundación.
-- [ ] Mejorar la ilustración del hero (ahora es un SVG básico).
-- [ ] Revisar con `impeccable` cuando el diseño visual esté más cerca del final.
+Las 6 páginas construidas. Deploy temporal de Vercel hecho (caduca; para
+permanente: `vercel login && vercel deploy`, o GitHub + vercel.com).
+
+## Pendiente
+
+- [ ] Rellenar marcadores: `[ciudad]`, `[teléfono]`, `[TU ESTUDIO]`, año de
+      fundación, nombres reales del equipo, dirección, líneas de bus.
+- [ ] Sustituir ilustraciones de monturas por fotos reales de producto.
+- [ ] Mapa real en Contacto (embed Google Maps / OpenStreetMap).
+- [ ] Conectar el formulario de cita (Supabase o Formspree).
+- [ ] Mejorar la ilustración del hero de Inicio.
+- [ ] Deploy permanente + dominio.
+- [ ] Pase con `impeccable` cuando el contenido real esté puesto.
