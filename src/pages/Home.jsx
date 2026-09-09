@@ -1,198 +1,221 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { motion, useReducedMotion } from 'framer-motion'
 import PageTransition from '../components/PageTransition.jsx'
 import Container from '../components/Container.jsx'
 import Button from '../components/Button.jsx'
 import Reveal from '../components/Reveal.jsx'
+import DotField from '../components/DotField.jsx'
+import Photo from '../components/Photo.jsx'
 import useTitle from '../lib/useTitle.js'
-import { servicios } from '../data/servicios.jsx'
+import { photos } from '../data/media.js'
 
-function HeroIllustration() {
-  const reduce = useReducedMotion()
+const mide = [
+  ['Agudeza visual', 'Cuánto ves de lejos y de cerca, con y sin corrección.'],
+  ['Refracción', 'Tu graduación exacta: esfera, cilindro y eje. El "¿así, o así?".'],
+  ['Salud ocular', 'Revisión del fondo de ojo y de la superficie.'],
+  ['Presión intraocular', 'Una medida rápida que conviene tener controlada.'],
+  ['Visión binocular', 'Cómo trabajan los dos ojos juntos, sobre todo en niños.'],
+]
+
+const pasos = [
+  ['01', 'Pides cita', 'Desde la web, por teléfono o WhatsApp. Elige día y franja; confirmamos nosotros.'],
+  ['02', 'Te revisamos', 'Media hora sin prisa. Sales con tu graduación y, si hace falta, un informe.'],
+  ['03', 'Eliges montura', 'Te enseñamos lo que encaja contigo. Sin ventas cruzadas.'],
+  ['04', 'Ajuste y seguimiento', 'Recoges, ajustamos, y el primer mes afinamos la graduación sin coste.'],
+]
+
+function AB() {
+  const [sel, setSel] = useState(0)
+  const opts = ['Montura fina de metal', 'Acetato con más presencia']
   return (
-    <motion.svg
-      viewBox="0 0 440 340"
-      className="w-full"
-      role="img"
-      aria-label="Ilustración de unas gafas vistas de frente"
-      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-    >
-      <rect x="1" y="1" width="438" height="338" rx="22" fill="rgb(var(--c-surface))" stroke="rgb(var(--c-line))" />
-      {/* filas de la carta optométrica, decrecientes */}
-      <g fill="rgb(var(--c-ink) / 0.05)" fontFamily="Spectral, serif" fontWeight="600" textAnchor="middle">
-        <text x="220" y="70" fontSize="34">E</text>
-        <text x="220" y="104" fontSize="20" letterSpacing="6">F P</text>
-        <text x="220" y="132" fontSize="13" letterSpacing="5">T O Z L</text>
-      </g>
-      {/* gafas de frente */}
-      <g fill="none" stroke="rgb(var(--c-primary))" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="70" y="150" width="130" height="104" rx="34" fill="rgb(var(--c-primary) / 0.07)" />
-        <rect x="240" y="150" width="130" height="104" rx="34" fill="rgb(var(--c-primary) / 0.07)" />
-        <path d="M200 178c12-10 28-10 40 0" />
-        <path d="M70 176c-16 4-26 2-34-6M370 176c16 4 26 2 34-6" />
-      </g>
-      {/* brillo de acento en una lente */}
-      <path d="M96 232c4-22 18-38 40-44" stroke="rgb(var(--c-accent))" strokeWidth="4" strokeLinecap="round" fill="none" />
-    </motion.svg>
+    <div className="mt-6 inline-flex flex-col gap-2 rounded-2xl border border-line-strong bg-surface p-2 sm:flex-row">
+      {opts.map((o, i) => (
+        <button
+          key={o}
+          onClick={() => setSel(i)}
+          className={`afterimage rounded-xl px-4 py-3 text-left text-sm transition-colors ${
+            sel === i ? 'bg-accent text-bg' : 'text-ink-soft hover:text-ink'
+          }`}
+          aria-pressed={sel === i}
+        >
+          <span className="font-mono text-[11px] opacity-70">{i === 0 ? 'así' : 'o así'}</span>
+          <span className="mt-0.5 block font-medium">{o}</span>
+        </button>
+      ))}
+    </div>
   )
 }
-
-const frames = [
-  { name: 'Acetato redondo', d: 'M12 26c0-11 7-16 22-16s22 5 22 16-7 18-22 18-22-7-22-18z' },
-  { name: 'Metal fino', d: 'M10 24c0-8 6-12 20-12s20 4 20 12-6 14-20 14-20-6-20-14z M52 24c0-8 6-12 20-12s20 4 20 12-6 14-20 14-20-6-20-14z' },
-  { name: 'Pantos', d: 'M12 20h44l-4 20c-1 6-8 8-18 8s-17-2-18-8z' },
-  { name: 'Cat-eye', d: 'M10 30c0-10 8-16 24-16 10 0 18 3 22 8-2-8-2-14-2-14s-10 2-20 2-16-2-16-2 0 6-2 14c-4 5-8 12-8 20' },
-]
 
 export default function Home() {
   useTitle()
   return (
     <PageTransition>
-      {/* ── Hero ── */}
+      {/* ── Hero: lámina ── */}
+      <section>
+        <DotField
+          text="VES"
+          className="h-[38vh] min-h-[260px] w-full sm:h-[46vh] sm:min-h-[380px]"
+          ariaLabel="Campo de puntos de colores en el que se lee «VES»"
+        />
+        <Container className="border-b border-line py-3">
+          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-ink-soft">
+            Lámina de Ishihara · así medimos cómo distingues los colores
+          </p>
+        </Container>
+      </section>
+
+      {/* ── Propuesta + acción ── */}
       <section className="border-b border-line">
-        <Container className="grid gap-12 py-16 sm:py-24 lg:grid-cols-[1.1fr_1fr] lg:items-center">
-          <div>
-            <p className="text-sm font-semibold uppercase tracking-wider text-primary">Salud visual en [ciudad]</p>
-            <h1 className="mt-4 font-display text-4xl font-semibold leading-tight text-ink sm:text-5xl lg:text-[3.4rem]">
-              Ver bien no debería ser complicado.
-            </h1>
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-ink-soft">
-              En Óptica Claravista te graduamos la vista con calma, te enseñamos solo lo que encaja contigo
-              y te acompañamos después de la compra. Optometristas colegiados, trato de barrio.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button to="/cita" size="lg">Pide tu cita</Button>
-              <Button to="/servicios" size="lg" variant="ghost">Ver servicios</Button>
+        <Container className="py-12 sm:py-20">
+          <div className="grid gap-10 lg:grid-cols-[1.4fr_1fr] lg:items-end">
+            <div>
+              <h1 className="font-display text-[2rem] leading-[1.12] text-ink sm:text-[2.9rem]">
+                Y si no ves bien, lo medimos y lo arreglamos.
+              </h1>
+              <p className="measure mt-5 text-lg leading-relaxed text-ink-soft">
+                Óptica de barrio en [ciudad] desde 1998. Dos generaciones en el mismo local,
+                graduando la vista con calma y sin venderte de más.
+              </p>
             </div>
-            <dl className="mt-10 grid max-w-md grid-cols-3 gap-6 border-t border-line pt-6">
-              <div>
-                <dt className="text-sm text-ink-soft">De experiencia</dt>
-                <dd className="mt-1 font-display text-2xl font-semibold text-ink">+25 años</dd>
+            <div className="lg:pb-1">
+              <Button to="/cita" size="lg" className="w-full sm:w-auto">Pide cita</Button>
+              <div className="mt-4">
+                <Link to="/servicios" className="text-sm font-semibold text-accent hover:text-accent-dark">
+                  Ver qué hacemos →
+                </Link>
               </div>
-              <div>
-                <dt className="text-sm text-ink-soft">Revisión</dt>
-                <dd className="mt-1 font-display text-2xl font-semibold text-ink">30 min</dd>
-              </div>
-              <div>
-                <dt className="text-sm text-ink-soft">Ajuste incluido</dt>
-                <dd className="mt-1 font-display text-2xl font-semibold text-ink">1 mes</dd>
-              </div>
-            </dl>
+            </div>
           </div>
-          <div className="lg:pl-6">
-            <HeroIllustration />
+
+          <dl className="mt-10 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-line bg-line sm:grid-cols-4">
+            {[
+              ['Dónde', '[Calle], [ciudad]'],
+              ['Teléfono', '[000 00 00 00]'],
+              ['Hoy', 'abierto hasta 20:30'],
+              ['Revisión', 'unos 30 min'],
+            ].map(([k, v]) => (
+              <div key={k} className="bg-bg p-4">
+                <dt className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-soft">{k}</dt>
+                <dd className="mt-1 text-sm font-medium text-ink">{v}</dd>
+              </div>
+            ))}
+          </dl>
+        </Container>
+      </section>
+
+      {/* ── Qué mide una revisión ── */}
+      <section className="border-b border-line">
+        <Container className="py-16 sm:py-24">
+          <div className="grid gap-12 lg:grid-cols-[1fr_1.05fr] lg:items-start lg:gap-16">
+            <Reveal>
+              <h2 className="font-display text-3xl text-ink sm:text-[2.4rem]">Qué mide una revisión</h2>
+              <p className="measure mt-4 text-lg leading-relaxed text-ink-soft">
+                No es "mira esta letra y ya". Una revisión completa toca cinco cosas, y te
+                contamos qué sale en cada una.
+              </p>
+              <div className="mt-8">
+                <Photo src={photos.examen.src} alt={photos.examen.alt} ratio="4/3" className="rounded-xl" priority />
+              </div>
+            </Reveal>
+
+            <Reveal delay={0.08}>
+              <ol className="divide-y divide-line border-y border-line">
+                {mide.map(([t, d], i) => (
+                  <li key={t} className="grid grid-cols-[2.5rem_1fr] gap-x-4 py-5">
+                    <span className="font-mono text-sm text-accent">{String(i + 1).padStart(2, '0')}</span>
+                    <div>
+                      <h3 className="font-display text-lg text-ink">{t}</h3>
+                      <p className="mt-1 text-[15px] leading-relaxed text-ink-soft">{d}</p>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </Reveal>
           </div>
         </Container>
       </section>
 
-      {/* ── Servicios ── */}
+      {/* ── Montura ── */}
+      <section className="border-b border-line bg-surface-2">
+        <Container className="py-16 sm:py-24">
+          <div className="grid gap-12 lg:grid-cols-[1.05fr_1fr] lg:items-center lg:gap-16">
+            <Reveal>
+              <Photo src={photos.paredMonturas.src} alt={photos.paredMonturas.alt} ratio="3/2" className="rounded-xl" />
+            </Reveal>
+            <Reveal delay={0.08}>
+              <h2 className="font-display text-3xl text-ink sm:text-[2.4rem]">Y luego, la montura</h2>
+              <p className="measure mt-4 text-lg leading-relaxed text-ink-soft">
+                La mitad del trabajo es elegir bien. Miramos tu cara, tu graduación y para qué
+                las quieres, y te enseñamos tres o cuatro que de verdad te sirven —no toda la pared.
+              </p>
+              <AB />
+              <div className="mt-8">
+                <Button to="/monturas" variant="ghost">Ver el catálogo</Button>
+              </div>
+            </Reveal>
+          </div>
+        </Container>
+      </section>
+
+      {/* ── Proceso ── */}
       <section className="border-b border-line">
         <Container className="py-16 sm:py-24">
-          <Reveal className="max-w-2xl">
-            <h2 className="font-display text-3xl font-semibold text-ink sm:text-4xl">Lo que hacemos</h2>
-            <p className="mt-4 text-lg leading-relaxed text-ink-soft">
-              Cuatro servicios, cada uno con su tiempo y su método. Sin ventas cruzadas ni prisa.
-            </p>
+          <Reveal>
+            <h2 className="font-display text-3xl text-ink sm:text-[2.4rem]">Tu cita, paso a paso</h2>
           </Reveal>
-
-          <div className="mt-12 grid gap-5 sm:grid-cols-2">
-            {servicios.map((s, i) => {
-              const Icon = s.icon
-              return (
-                <Reveal key={s.id} delay={i * 0.06}>
-                  <Link
-                    to="/servicios"
-                    className="group flex h-full flex-col rounded-2xl border border-line bg-surface p-6 transition duration-200 ease-curve hover:-translate-y-1 hover:shadow-card sm:p-7"
-                  >
-                    <span className="grid h-12 w-12 place-items-center rounded-xl bg-primary-soft text-primary">
-                      <Icon className="h-7 w-7" />
-                    </span>
-                    <h3 className="mt-5 font-display text-xl font-semibold text-ink">{s.titulo}</h3>
-                    <p className="mt-2 flex-1 text-[15px] leading-relaxed text-ink-soft">{s.resumen}</p>
-                    <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-primary">
-                      Saber más
-                      <svg viewBox="0 0 16 16" className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3l5 5-5 5" /></svg>
-                    </span>
-                  </Link>
-                </Reveal>
-              )
-            })}
-          </div>
+          <ol className="mt-10 divide-y divide-line border-y border-line">
+            {pasos.map(([n, t, d], i) => (
+              <Reveal as="li" key={n} delay={i * 0.05} className="grid gap-2 py-6 sm:grid-cols-[4rem_12rem_1fr] sm:items-baseline sm:gap-6">
+                <span className="font-mono text-sm text-accent">{n}</span>
+                <h3 className="font-display text-lg text-ink">{t}</h3>
+                <p className="measure text-[15px] leading-relaxed text-ink-soft">{d}</p>
+              </Reveal>
+            ))}
+          </ol>
         </Container>
       </section>
 
       {/* ── Confianza ── */}
-      <section className="border-b border-line bg-ink text-white">
+      <section className="border-b border-line bg-ink text-bg">
         <Container className="py-16 sm:py-20">
-          <div className="grid gap-10 lg:grid-cols-[1fr_1.2fr] lg:items-center">
+          <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr] lg:items-center">
             <Reveal>
-              <h2 className="font-display text-3xl font-semibold sm:text-4xl">Gente de aquí, desde 1998</h2>
-              <p className="mt-4 text-lg leading-relaxed text-white/70">
-                Dos generaciones de ópticos en el mismo local. Nos conocen por nombre y volvemos a vernos cada año.
+              <h2 className="font-display text-3xl sm:text-[2.4rem]">Seguimos en el mismo sitio</h2>
+              <p className="measure mt-4 text-lg leading-relaxed text-bg/70">
+                Desde 1998, dos generaciones de ópticos en el mismo local. Nos vas a ver por el
+                barrio: respondemos por lo que vendemos, y el primer mes ajustamos la graduación
+                sin coste si te cuesta adaptarte.
               </p>
             </Reveal>
             <Reveal delay={0.1}>
-              <dl className="grid grid-cols-2 gap-8 sm:grid-cols-3">
-                {[
-                  ['+9.000', 'clientes atendidos'],
-                  ['4,9 / 5', 'valoración media'],
-                  ['2', 'optometristas colegiados'],
-                ].map(([n, l]) => (
+              <dl className="grid grid-cols-3 gap-6 font-mono">
+                {[['+25', 'años'], ['9k+', 'revisiones'], ['4,9', 'valoración']].map(([n, l]) => (
                   <div key={l}>
-                    <p className="font-display text-3xl font-semibold sm:text-4xl">{n}</p>
-                    <p className="mt-1 text-sm text-white/60">{l}</p>
+                    <dd className="text-3xl text-bg">{n}</dd>
+                    <dt className="mt-1 text-xs text-bg/50">{l}</dt>
                   </div>
                 ))}
               </dl>
-              <p className="mt-6 text-xs text-white/40">Cifras de ejemplo — se sustituyen por las reales del cliente.</p>
+              <p className="mt-5 text-[11px] text-bg/40">Cifras de ejemplo — se sustituyen por las reales.</p>
             </Reveal>
           </div>
-        </Container>
-      </section>
-
-      {/* ── Monturas ── */}
-      <section className="border-b border-line">
-        <Container className="py-16 sm:py-24">
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <Reveal>
-              <h2 className="font-display text-3xl font-semibold text-ink sm:text-4xl">Monturas para cada cara</h2>
-              <p className="mt-4 max-w-xl text-lg leading-relaxed text-ink-soft">
-                Una selección corta y bien elegida: acetato, metal, sol y línea infantil.
-              </p>
-            </Reveal>
-            <Button to="/monturas" variant="ghost">Ver catálogo</Button>
-          </div>
-
-          <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
-            {frames.map((f, i) => (
-              <Reveal key={f.name} delay={i * 0.05}>
-                <div className="rounded-2xl border border-line bg-surface-2 p-5">
-                  <svg viewBox="0 0 100 56" className="w-full text-ink" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d={f.d} />
-                  </svg>
-                  <p className="mt-3 text-sm font-medium text-ink">{f.name}</p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-          <p className="mt-4 text-xs text-ink-soft">Ilustraciones de muestra — se sustituyen por fotos reales de producto.</p>
         </Container>
       </section>
 
       {/* ── CTA ── */}
       <section>
-        <Container className="py-20 text-center sm:py-28">
-          <Reveal className="mx-auto max-w-2xl">
-            <h2 className="font-display text-3xl font-semibold text-ink sm:text-4xl">¿Hace cuánto no te revisas la vista?</h2>
-            <p className="mt-4 text-lg leading-relaxed text-ink-soft">
-              Reserva en un minuto. Elige día y hora y te confirmamos por teléfono.
-            </p>
-            <div className="mt-8 flex justify-center">
-              <Button to="/cita" size="lg">Pide tu cita</Button>
-            </div>
-          </Reveal>
+        <DotField
+          text="CITA"
+          className="h-[30vh] min-h-[220px] w-full sm:h-[36vh]"
+          ariaLabel="Campo de puntos en el que se lee «CITA»"
+        />
+        <Container className="py-12 text-center">
+          <p className="measure mx-auto text-lg leading-relaxed text-ink-soft">
+            Elige día y hora. Te confirmamos por teléfono en horario de tienda.
+          </p>
+          <div className="mt-6 flex justify-center">
+            <Button to="/cita" size="lg">Pide tu cita</Button>
+          </div>
         </Container>
       </section>
     </PageTransition>

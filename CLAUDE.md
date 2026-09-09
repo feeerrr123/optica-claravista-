@@ -4,13 +4,19 @@ Web **demo multipágina** (marca ficticia) de una óptica. Prototipo para enseñ
 ópticas reales en el negocio de creación de webs para negocios locales.
 
 **Marca ficticia. Ningún dato es real.** `[TU ESTUDIO]`, `[ciudad]`, `[teléfono]`,
-etc. son marcadores de posición a rellenar.
+`[calle y número]`, nombres del equipo, año de fundación = marcadores a rellenar.
+
+Ver `PRODUCT.md` (verdad de producto) y `DESIGN.md` (sistema visual). Dirección
+visual **"La línea de puntos"** (impeccable, seed `a0a1eac2`, elegida por el
+cliente). El contrato de dirección está en el `<!-- comentario -->` de `index.html`.
 
 ## Stack
 
 - **React 18 + Vite 6** · **React Router 6** · **Tailwind 3** · **Framer Motion 11**
-- Sin backend. Formularios (cita, contacto) serán solo UI; Supabase más adelante.
-- Deploy: **Vercel** (`vercel.json` ya tiene el rewrite SPA).
+- Sin backend. Formulario de cita = solo UI (muestra confirmación). Pendiente
+  conectar a Supabase (tabla `leads`, como Óptica Nazareth) o Formspree.
+- Deploy: **Vercel vía GitHub** (`feeerrr123/optica-claravista-`). `vercel.json`
+  tiene el rewrite SPA.
 
 ```bash
 npm install
@@ -23,61 +29,57 @@ npm run build
 ```
 src/
   main.jsx            entry + BrowserRouter
-  App.jsx             rutas + <AnimatePresence> para transición de página
-  index.css           ← PALETA (variables CSS) + resets. Recolorear aquí.
+  App.jsx             rutas + <ScrollToTop>. SIN AnimatePresence de ruta.
+  index.css           ← PALETA (variables --c-*, canal RGB) + resets + .afterimage
+  lib/useTitle.js     <title> por página
   components/
     Layout.jsx        Navbar + Footer + Chatbot + skip-link
-    Navbar.jsx        sticky, menú móvil animado, CTA "Pide tu cita"
-    Footer.jsx
-    Chatbot.jsx       widget flotante, FAQ predefinidas (sin IA)
-    PageTransition.jsx  envuelve cada página (fade/slide 280ms)
+    Navbar.jsx        sticky, filete inferior, menú móvil, "Pide cita" aislada
+    Footer.jsx        hairlines, horario en mono
+    Chatbot.jsx       widget flotante, FAQ predefinidas (sin IA), datos en chatbot.js
+    DotField.jsx      ★ el dispositivo: lámina de puntos que se resuelve en `text`
+    Photo.jsx         foto con ratio fijo, ring, filtro cálido, carga diferida
+    PageTransition.jsx  fade+12px al montar (sin exit)
     Reveal.jsx        fade-in al entrar en viewport (whileInView, once)
-    Container.jsx     ancho máximo + padding lateral
-    Button.jsx        variantes: primary / ghost / quiet
-    StubPage.jsx      placeholder de páginas aún no construidas
+    Container.jsx · Button.jsx
   data/
     chatbot.js        guion del chatbot
-    servicios.jsx     los 4 servicios + iconos SVG (JSX → .jsx, no .js)
-  pages/
-    Home.jsx          ← ÚNICA página construida
-    Servicios/Monturas/Nosotros/Cita/Contacto .jsx  ← stubs
+    servicios.jsx     los 4 servicios con detalle (JSX → .jsx)
+    media.js          fotos Unsplash (verificadas) + catálogo de monturas
+  pages/              Home · Servicios · Monturas · Nosotros · Cita · Contacto
 ```
 
-## Color (importante)
+## Color
 
-Toda la paleta vive en `src/index.css` como variables `--c-*` en formato **canal
-RGB** (`"13 94 88"`). Tailwind las consume con `rgb(var(--c-x) / <alpha-value>)`,
-así que `bg-primary`, `text-ink`, `bg-primary/10`, etc. funcionan.
+Paleta en `src/index.css`, variables `--c-*` en **canal RGB** (`"38 35 29"`).
+Tailwind: `bg-bg`, `text-ink`, `border-line`, `bg-accent`, `text-accent/60`, etc.
 
-**Paleta activa: petróleo + arena + cobre.** Para reshadear: cambiar ~10 líneas del
-`:root`. Hay 2 variantes de ejemplo comentadas (A "azul confianza", C "azul noche").
+**Paleta activa: papel cálido + tierras de Ishihara + acento arcilla.** Detalle en
+`DESIGN.md`. Los `--dot-*` son SOLO para `<DotField>`, nunca relleno de UI.
 
-## framer-motion — regla dura
+## Reglas duras
 
-**No anidar `AnimatePresence mode="wait"`.** Rompe el árbol. Las transiciones de
-página son solo `initial`/`animate` al montar (`PageTransition`), sin `exit` y sin
-`AnimatePresence` a nivel de ruta. Chatbot y menú móvil usan `AnimatePresence` en
-modo por defecto (sync) y van bien porque están fuera de las rutas.
-
-## Animación
-
-- Framer Motion. Curva del proyecto: `[0.16, 1, 0.3, 1]`. Duraciones 150–500 ms.
-- Todo respeta `useReducedMotion()`.
-- `Reveal` usa `viewport={{ once: true }}` — el contenido queda visible tras la
-  primera aparición; no re-anima al volver a hacer scroll.
+- **framer-motion:** NO anidar `AnimatePresence mode="wait"`. Rompió form, filtro
+  y navegación. Transición de página = solo `initial/animate` en `PageTransition`.
+  Chatbot y menú móvil usan `AnimatePresence` (modo sync) porque están fuera de rutas.
+- **DotField:** siempre debe acabar pintando el mensaje legible. No quitar la red
+  de seguridad (`setTimeout` que fuerza `paint(1)`), ni el camino `reduced-motion`.
+- **División por filete de 1px, nunca sombra de tarjeta.** Sin eyebrow/kicker
+  sobre los titulares.
+- **Fotos:** todas son stock marcado para sustituir (`media.js`). No usar como
+  reales en JSON-LD/OG.
 
 ## Estado
 
-Las 6 páginas construidas. Deploy temporal de Vercel hecho (caduca; para
-permanente: `vercel login && vercel deploy`, o GitHub + vercel.com).
+Las 6 páginas rediseñadas con la dirección "La línea de puntos". Build OK,
+`detect.mjs` limpio. Revisión de acabado hecha en el hilo (el harness no tiene el
+subagente `impeccable-finish-reviewer`).
 
 ## Pendiente
 
-- [ ] Rellenar marcadores: `[ciudad]`, `[teléfono]`, `[TU ESTUDIO]`, año de
-      fundación, nombres reales del equipo, dirección, líneas de bus.
-- [ ] Sustituir ilustraciones de monturas por fotos reales de producto.
-- [ ] Mapa real en Contacto (embed Google Maps / OpenStreetMap).
-- [ ] Conectar el formulario de cita (Supabase o Formspree).
-- [ ] Mejorar la ilustración del hero de Inicio.
-- [ ] Deploy permanente + dominio.
-- [ ] Pase con `impeccable` cuando el contenido real esté puesto.
+- [ ] Rellenar marcadores con datos de una óptica real para el pitch.
+- [ ] Sustituir fotos de muestra por fotos reales del cliente.
+- [ ] Mapa real en Contacto (embed).
+- [ ] Conectar el formulario de cita (Supabase / Formspree).
+- [ ] Revisar `DotField` en anchos intermedios (trazos anchos en bandas apaisadas).
+- [ ] Confirmar el deploy de Vercel conectado al repo.

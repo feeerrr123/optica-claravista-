@@ -16,9 +16,7 @@ export default function Chatbot() {
   const ask = (faq) => {
     setAsked((a) => [...a, faq.id])
     setMessages((m) => [...m, { from: 'user', text: faq.q }])
-    window.setTimeout(() => {
-      setMessages((m) => [...m, { from: 'bot', text: faq.a }])
-    }, 380)
+    window.setTimeout(() => setMessages((m) => [...m, { from: 'bot', text: faq.a }]), 360)
   }
 
   const remaining = chatbotFaqs.filter((f) => !asked.includes(f.id))
@@ -30,31 +28,21 @@ export default function Chatbot() {
           <motion.div
             role="dialog"
             aria-label="Asistente de Óptica Claravista"
-            className="flex h-[28rem] w-[min(22rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-lift"
-            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.96 }}
+            className="flex h-[27rem] w-[min(21rem,calc(100vw-2.5rem))] flex-col overflow-hidden rounded-2xl border border-line-strong bg-surface"
+            style={{ boxShadow: '0 2px 8px rgb(38 35 29 / 0.08), 0 24px 48px -20px rgb(38 35 29 / 0.28)' }}
+            initial={reduce ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.97 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={reduce ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.96 }}
-            transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
+            exit={reduce ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.97 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
           >
-            <div className="flex items-center justify-between border-b border-line bg-surface-2 px-4 py-3">
-              <div className="flex items-center gap-2.5">
-                <span className="grid h-8 w-8 place-items-center rounded-full bg-primary text-white">
-                  <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path d="M3 12c3-4.5 6.5-7 9-7s6 2.5 9 7c-3 4.5-6.5 7-9 7s-6-2.5-9-7z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
-                </span>
-                <div className="leading-tight">
-                  <p className="text-sm font-semibold text-ink">Asistente</p>
-                  <p className="text-xs text-ink-soft">Respuestas al momento</p>
-                </div>
-              </div>
+            <div className="flex items-center justify-between border-b border-line px-4 py-3">
+              <p className="font-display text-[15px] text-ink">Asistente</p>
               <button
                 onClick={() => setOpen(false)}
-                className="grid h-8 w-8 place-items-center rounded-full text-ink-soft hover:bg-surface hover:text-ink"
+                className="grid h-8 w-8 place-items-center rounded-full text-ink-soft transition-colors hover:text-ink"
                 aria-label="Cerrar asistente"
               >
-                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+                <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
               </button>
             </div>
 
@@ -63,9 +51,7 @@ export default function Chatbot() {
                 <div key={i} className={m.from === 'user' ? 'flex justify-end' : 'flex justify-start'}>
                   <p
                     className={`max-w-[85%] rounded-2xl px-3.5 py-2 text-sm leading-relaxed ${
-                      m.from === 'user'
-                        ? 'rounded-br-sm bg-primary text-white'
-                        : 'rounded-bl-sm bg-surface-2 text-ink'
+                      m.from === 'user' ? 'rounded-br-sm bg-accent text-bg' : 'rounded-bl-sm bg-surface-2 text-ink'
                     }`}
                   >
                     {m.text}
@@ -81,16 +67,14 @@ export default function Chatbot() {
                     <button
                       key={f.id}
                       onClick={() => ask(f)}
-                      className="rounded-full border border-line px-3 py-1.5 text-xs font-medium text-ink transition hover:border-primary hover:text-primary"
+                      className="rounded-full border border-line-strong px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-accent hover:text-accent"
                     >
                       {f.q}
                     </button>
                   ))}
                 </div>
               ) : (
-                <p className="px-1 text-xs text-ink-soft">
-                  ¿Otra duda? Llámanos al [teléfono] o escríbenos por WhatsApp.
-                </p>
+                <p className="px-1 text-xs text-ink-soft">¿Otra duda? Llámanos al [teléfono] o escríbenos por WhatsApp.</p>
               )}
             </div>
           </motion.div>
@@ -99,25 +83,18 @@ export default function Chatbot() {
 
       <motion.button
         onClick={() => setOpen((v) => !v)}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-white shadow-lift"
+        className="afterimage flex h-14 w-14 items-center justify-center rounded-full bg-accent text-bg"
+        style={{ boxShadow: '0 2px 8px rgb(38 35 29 / 0.14), 0 16px 32px -14px rgb(38 35 29 / 0.4)' }}
         whileHover={reduce ? undefined : { scale: 1.05 }}
         whileTap={reduce ? undefined : { scale: 0.95 }}
         aria-label={open ? 'Cerrar asistente' : 'Abrir asistente'}
         aria-expanded={open}
       >
-        <AnimatePresence mode="wait" initial={false}>
-          {open ? (
-            <motion.svg key="x" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
-              initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }} transition={{ duration: 0.15 }}>
-              <path d="M6 6l12 12M18 6L6 18" />
-            </motion.svg>
-          ) : (
-            <motion.svg key="chat" viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-              initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }} transition={{ duration: 0.15 }}>
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </motion.svg>
-          )}
-        </AnimatePresence>
+        {open ? (
+          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        ) : (
+          <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" /></svg>
+        )}
       </motion.button>
     </div>
   )

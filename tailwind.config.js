@@ -3,8 +3,6 @@ export default {
   content: ['./index.html', './src/**/*.{js,jsx}'],
   theme: {
     extend: {
-      // Todos los colores salen de variables CSS en src/index.css.
-      // Para recolorear la web entera, cambia esas variables (canal RGB "r g b").
       colors: {
         bg: 'rgb(var(--c-bg) / <alpha-value>)',
         surface: 'rgb(var(--c-surface) / <alpha-value>)',
@@ -12,24 +10,31 @@ export default {
         ink: 'rgb(var(--c-ink) / <alpha-value>)',
         'ink-soft': 'rgb(var(--c-ink-soft) / <alpha-value>)',
         line: 'rgb(var(--c-line) / <alpha-value>)',
-        primary: {
-          DEFAULT: 'rgb(var(--c-primary) / <alpha-value>)',
-          dark: 'rgb(var(--c-primary-dark) / <alpha-value>)',
-          soft: 'rgb(var(--c-primary-soft) / <alpha-value>)',
+        'line-strong': 'rgb(var(--c-line-strong) / <alpha-value>)',
+        accent: {
+          DEFAULT: 'rgb(var(--c-accent) / <alpha-value>)',
+          dark: 'rgb(var(--c-accent-dark) / <alpha-value>)',
         },
-        accent: 'rgb(var(--c-accent) / <alpha-value>)',
       },
       fontFamily: {
-        display: ['Spectral', 'Georgia', 'serif'],
+        display: ['"Bricolage Grotesque"', '"Hanken Grotesk"', 'sans-serif'],
         sans: ['"Hanken Grotesk"', 'system-ui', 'sans-serif'],
+        mono: ['"Spline Sans Mono"', 'ui-monospace', 'monospace'],
       },
-      maxWidth: { shell: '75rem' },
-      boxShadow: {
-        card: '0 1px 2px rgb(15 23 42 / 0.04), 0 12px 28px -14px rgb(15 23 42 / 0.16)',
-        lift: '0 2px 6px rgb(15 23 42 / 0.06), 0 24px 48px -20px rgb(15 23 42 / 0.24)',
-      },
+      maxWidth: { shell: '76rem' },
       transitionTimingFunction: {
         curve: 'cubic-bezier(0.16, 1, 0.3, 1)',
+      },
+      keyframes: {
+        'resolve-in': {
+          '0%': { opacity: '0', filter: 'blur(8px)' },
+          '60%': { opacity: '1', filter: 'blur(0)' },
+          '72%': { opacity: '0.72' },
+          '100%': { opacity: '1', filter: 'blur(0)' },
+        },
+      },
+      animation: {
+        'resolve-in': 'resolve-in 1s cubic-bezier(0.16, 1, 0.3, 1) both',
       },
     },
   },
