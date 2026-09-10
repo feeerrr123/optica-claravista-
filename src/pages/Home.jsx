@@ -157,8 +157,43 @@ export default function Home() {
         </Container>
       </section>
 
-      {/* ── Proceso ── */}
+      {/* ── Teaser juegos ── */}
       <section className="border-b border-line">
+        <Container className="py-16 sm:py-24">
+          <div className="grid gap-8 lg:grid-cols-[1fr_1fr] lg:items-center lg:gap-16">
+            <Reveal>
+              <h2 className="font-display text-3xl text-ink sm:text-[2.4rem]">¿Qué tal andas de vista?</h2>
+              <p className="measure mt-4 text-lg leading-relaxed text-ink-soft">
+                Cuatro juegos rápidos —color, agudeza, contraste y visión 3D— de fácil a difícil.
+                Al acabar, tu carné visual con el nivel de cada uno. No es un diagnóstico; es para
+                picar la curiosidad.
+              </p>
+              <div className="mt-8">
+                <Button to="/juegos" size="lg">Jugar</Button>
+              </div>
+            </Reveal>
+            <Reveal delay={0.08}>
+              <ol className="divide-y divide-line border-y border-line font-mono text-sm">
+                {[
+                  ['01', 'Color', 'Fácil'],
+                  ['02', 'Agudeza', 'Normal'],
+                  ['03', 'Contraste', 'Difícil'],
+                  ['04', 'Visión 3D', 'Muy difícil'],
+                ].map(([n, t, d]) => (
+                  <li key={n} className="grid grid-cols-[2.5rem_1fr_auto] items-center py-3.5">
+                    <span className="text-accent">{n}</span>
+                    <span className="font-sans text-[15px] font-semibold text-ink">{t}</span>
+                    <span className="text-ink-soft">{d}</span>
+                  </li>
+                ))}
+              </ol>
+            </Reveal>
+          </div>
+        </Container>
+      </section>
+
+      {/* ── Proceso ── */}
+      <section className="border-b border-line bg-surface-2">
         <Container className="py-16 sm:py-24">
           <Reveal>
             <h2 className="font-display text-3xl text-ink sm:text-[2.4rem]">Tu cita, paso a paso</h2>

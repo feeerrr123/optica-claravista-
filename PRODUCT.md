@@ -50,7 +50,11 @@ familia feliz, tres tarjetas) por tener un punto de vista y craft real.
   Motion. Deploy Vercel vía GitHub (`feeerrr123/optica-claravista-`). SPA rewrite
   en `vercel.json`.
 - **Páginas:** Inicio, Servicios, Monturas (con filtros hombre/mujer/niño/sol),
-  Sobre nosotros, Pide cita, Contacto.
+  **Juegos para la vista**, Sobre nosotros, Pide cita, Contacto.
+- **Juegos para la vista:** 4 mini-juegos en canvas (color, agudeza, contraste,
+  visión 3D), de fácil a difícil, con progreso guardado y un "carné visual" final
+  compartible. **Son juegos, no diagnóstico** — aviso visible en cada uno y en el
+  carné; el resultado nunca afirma un valor clínico. Convierten hacia "pide cita".
 - **Formulario de cita:** hoy solo UI (muestra confirmación, no envía). Pendiente
   conectar a Supabase (tabla `leads`, como en Óptica Nazareth) o Formspree —
   **después** de cerrar el diseño.

@@ -46,8 +46,30 @@ src/
     chatbot.js        guion del chatbot
     servicios.jsx     los 4 servicios con detalle (JSX → .jsx)
     media.js          fotos Unsplash (verificadas) + catálogo de monturas
-  pages/              Home · Servicios · Monturas · Nosotros · Cita · Contacto
+  games/              juegos para la vista (ver abajo)
+  lib/juegos.js       estado (localStorage) + puntuación + veredicto
+  pages/              Home · Servicios · Monturas · Juegos · Nosotros · Cita · Contacto
 ```
+
+## Juegos para la vista (`/juegos`)
+
+Cuatro mini-juegos en `<canvas>`, de fácil a difícil, con carné visual al final.
+`src/pages/Juegos.jsx` orquesta; `src/lib/juegos.js` guarda el progreso en
+`localStorage` (`claravista.juegos.v1`), puntúa cada uno (1–5) y saca el veredicto.
+
+- `games/Color.jsx` — Ishihara jugable (6 láminas, opción múltiple).
+- `games/Agudeza.jsx` — anillo de Landolt que encoge; dirección del hueco.
+- `games/Contraste.jsx` — parche de rejilla (Gabor) que se desvanece; inclinación.
+- `games/Estereograma.jsx` — autostereograma SIRDS (puntos de colores) + guía de
+  dos puntos + pista revelable.
+- `games/Carne.jsx` — resumen; genera un PNG 1080×1350 (`navigator.share` en móvil,
+  descarga en escritorio).
+- `games/ui.jsx` — `Intro`, `Resultado`, `Rating`, `Aviso`, `ArrowPad`, `GameFrame`.
+
+**Regla:** son juegos, NO diagnóstico. El `<Aviso>` va en cada intro y en el
+carné. El resultado nunca afirma un valor clínico ("nivel X en este juego").
+Los canvas con `putImageData` renderizan en un canvas offscreen a tamaño CSS y
+luego `drawImage` (si no, el DPR descoloca la imagen).
 
 ## Color
 

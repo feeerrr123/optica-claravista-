@@ -7,6 +7,7 @@ const cols = [
     items: [
       ['Servicios', '/servicios'],
       ['Monturas', '/monturas'],
+      ['Juegos para la vista', '/juegos'],
       ['Sobre nosotros', '/nosotros'],
       ['Pide cita', '/cita'],
     ],
