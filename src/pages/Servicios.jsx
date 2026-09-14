@@ -15,7 +15,10 @@ const foto = {
 }
 
 export default function Servicios() {
-  useTitle('Servicios')
+  useTitle(
+    'Servicios',
+    'Qué mide una revisión completa: agudeza visual, refracción, salud ocular, presión intraocular y visión binocular. Óptica Claravista, [ciudad].'
+  )
   return (
     <PageTransition>
       <section className="border-b border-line">

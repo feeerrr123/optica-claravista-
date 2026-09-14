@@ -38,7 +38,10 @@ function Stepper({ state, actual }) {
 }
 
 export default function Juegos() {
-  useTitle('Juegos para la vista')
+  useTitle(
+    'Juegos para la vista',
+    'Cuatro juegos rápidos —color, agudeza, contraste y visión 3D— para saber cómo andas de vista. No es un diagnóstico.'
+  )
   const { state, guardar, reiniciar, hechos, todos, siguiente } = useJuegos()
 
   const Actual = siguiente ? COMP[siguiente.id] : null

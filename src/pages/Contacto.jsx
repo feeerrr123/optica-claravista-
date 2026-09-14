@@ -23,7 +23,10 @@ function Line({ icon, children }) {
 }
 
 export default function Contacto() {
-  useTitle('Contacto')
+  useTitle(
+    'Contacto',
+    'Dirección, teléfono y horario de Óptica Claravista en [ciudad]. Escríbenos o pásate por la tienda.'
+  )
   return (
     <PageTransition>
       <section className="border-b border-line">

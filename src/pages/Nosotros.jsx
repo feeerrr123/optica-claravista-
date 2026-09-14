@@ -27,7 +27,10 @@ const valores = [
 ]
 
 export default function Nosotros() {
-  useTitle('Sobre nosotros')
+  useTitle(
+    'Sobre nosotros',
+    'Dos generaciones de ópticos en el mismo local de [ciudad] desde 1998. Así medimos la vista y así elegimos montura contigo.'
+  )
   return (
     <PageTransition>
       <section className="border-b border-line">

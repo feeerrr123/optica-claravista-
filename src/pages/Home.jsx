@@ -24,30 +24,48 @@ const pasos = [
   ['04', 'Ajuste y seguimiento', 'Recoges, ajustamos, y el primer mes afinamos la graduación sin coste.'],
 ]
 
+const MONTURA_OPTS = [
+  {
+    label: 'Montura fina de metal',
+    nota: 'Casi no se nota que la llevas — para cuando quieres que se vea tu cara, no las gafas.',
+  },
+  {
+    label: 'Acetato con más presencia',
+    nota: 'Color y grosor a la vista — para llevarlas como un accesorio más, no de paso.',
+  },
+]
+
 function AB() {
   const [sel, setSel] = useState(0)
-  const opts = ['Montura fina de metal', 'Acetato con más presencia']
   return (
-    <div className="mt-6 inline-flex flex-col gap-2 rounded-2xl border border-line-strong bg-surface p-2 sm:flex-row">
-      {opts.map((o, i) => (
-        <button
-          key={o}
-          onClick={() => setSel(i)}
-          className={`afterimage rounded-xl px-4 py-3 text-left text-sm transition-colors ${
-            sel === i ? 'bg-accent text-bg' : 'text-ink-soft hover:text-ink'
-          }`}
-          aria-pressed={sel === i}
-        >
-          <span className="font-mono text-[11px] opacity-70">{i === 0 ? 'así' : 'o así'}</span>
-          <span className="mt-0.5 block font-medium">{o}</span>
-        </button>
-      ))}
+    <div className="mt-6">
+      <div className="inline-flex flex-col gap-2 rounded-2xl border border-line-strong bg-surface p-2 sm:flex-row">
+        {MONTURA_OPTS.map((o, i) => (
+          <button
+            key={o.label}
+            onClick={() => setSel(i)}
+            className={`afterimage rounded-xl px-4 py-3 text-left text-sm transition-colors ${
+              sel === i ? 'bg-accent text-bg' : 'text-ink-soft hover:text-ink'
+            }`}
+            aria-pressed={sel === i}
+          >
+            <span className="font-mono text-[11px] opacity-70">{i === 0 ? 'así' : 'o así'}</span>
+            <span className="mt-0.5 block font-medium">{o.label}</span>
+          </button>
+        ))}
+      </div>
+      <p className="measure mt-3 text-sm leading-relaxed text-ink-soft" aria-live="polite">
+        {MONTURA_OPTS[sel].nota}
+      </p>
     </div>
   )
 }
 
 export default function Home() {
-  useTitle()
+  useTitle(
+    undefined,
+    'Óptica de barrio en [ciudad] desde 1998. Graduamos la vista con calma, sin venderte de más. Pide tu cita en un minuto.'
+  )
   return (
     <PageTransition>
       {/* ── Hero: lámina ── */}
@@ -223,9 +241,9 @@ export default function Home() {
               </p>
             </Reveal>
             <Reveal delay={0.1}>
-              <dl className="grid grid-cols-3 gap-6 font-mono">
+              <dl className="grid grid-cols-3 divide-x divide-bg/15 border-y border-bg/15 font-mono">
                 {[['+25', 'años'], ['9k+', 'revisiones'], ['4,9', 'valoración']].map(([n, l]) => (
-                  <div key={l}>
+                  <div key={l} className="px-4 py-4 first:pl-0">
                     <dd className="text-3xl text-bg">{n}</dd>
                     <dt className="mt-1 text-xs text-bg/50">{l}</dt>
                   </div>

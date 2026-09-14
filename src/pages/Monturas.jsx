@@ -8,7 +8,10 @@ import useTitle from '../lib/useTitle.js'
 import { monturas, categorias } from '../data/media.js'
 
 export default function Monturas() {
-  useTitle('Monturas')
+  useTitle(
+    'Monturas',
+    'Catálogo de monturas para hombre, mujer, niño y sol en Óptica Claravista, [ciudad]. Precios orientativos, prueba en tienda.'
+  )
   const [filtro, setFiltro] = useState('todas')
   const reduce = useReducedMotion()
   const lista = filtro === 'todas' ? monturas : monturas.filter((m) => m.cat === filtro)

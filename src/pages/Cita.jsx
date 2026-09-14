@@ -16,7 +16,10 @@ function mensajeError(el) {
 }
 
 export default function Cita() {
-  useTitle('Pide tu cita')
+  useTitle(
+    'Pide tu cita',
+    'Reserva tu revisión visual en Óptica Claravista, [ciudad], en menos de un minuto. Te confirmamos por teléfono.'
+  )
   const [enviado, setEnviado] = useState(false)
   const [errores, setErrores] = useState({})
   const reduce = useReducedMotion()
