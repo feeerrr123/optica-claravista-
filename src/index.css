@@ -15,8 +15,8 @@
   --c-ink-soft: 106 99 84;      /* texto secundario, tintado */
   --c-line: 226 219 203;        /* filete 1px */
   --c-line-strong: 205 196 176;
-  --c-accent: 191 86 54;        /* arcilla — la acción */
-  --c-accent-dark: 158 66 40;   /* hover de la acción */
+  --c-accent: 158 66 40;        /* arcilla — la acción (~5,8:1 sobre --c-bg, AA) */
+  --c-accent-dark: 126 50 28;   /* hover de la acción (~8:1 sobre --c-bg) */
 
   /* puntos del mosaico (solo dentro de <DotField>, nunca como relleno UI) */
   --dot-fig-1: 193 92 62;       /* terracota */

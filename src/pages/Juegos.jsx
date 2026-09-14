@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import PageTransition from '../components/PageTransition.jsx'
 import Container from '../components/Container.jsx'
 import useTitle from '../lib/useTitle.js'
@@ -42,8 +43,23 @@ export default function Juegos() {
 
   const Actual = siguiente ? COMP[siguiente.id] : null
 
+  const [anuncio, setAnuncio] = useState('')
+  const hechosPrevios = useRef(hechos)
+  useEffect(() => {
+    if (hechos > hechosPrevios.current) {
+      const ultimo = [...JUEGOS].reverse().find((j) => state[j.id])
+      if (ultimo) setAnuncio(`${ultimo.titulo} completado. Valoración ${state[ultimo.id].rating} de 5.`)
+    } else if (todos) {
+      setAnuncio('Los 4 juegos completados. Tu carné visual está listo.')
+    } else if (siguiente) {
+      setAnuncio(`Juego ${siguiente.n} de 4: ${siguiente.titulo}, nivel ${siguiente.nivel}.`)
+    }
+    hechosPrevios.current = hechos
+  }, [hechos, todos, siguiente, state])
+
   return (
     <PageTransition>
+      <p role="status" aria-live="polite" className="sr-only">{anuncio}</p>
       <section className="border-b border-line">
         <Container className="pb-10 pt-10 sm:py-16">
           <h1 className="max-w-4xl font-display text-4xl leading-[1.1] text-ink sm:text-[3.2rem]">

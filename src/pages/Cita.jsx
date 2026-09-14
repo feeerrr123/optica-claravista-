@@ -4,17 +4,45 @@ import PageTransition from '../components/PageTransition.jsx'
 import Container from '../components/Container.jsx'
 import useTitle from '../lib/useTitle.js'
 
-const field =
-  'mt-1.5 w-full rounded-lg border border-line-strong bg-surface px-3 py-2.5 text-[15px] text-ink outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20'
+const field = (invalido) =>
+  `mt-1.5 w-full rounded-lg border bg-surface px-3 py-2.5 text-[15px] text-ink outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20 ${
+    invalido ? 'border-accent ring-2 ring-accent/15' : 'border-line-strong'
+  }`
+
+function mensajeError(el) {
+  if (el.validity.valueMissing) return 'Este campo es obligatorio.'
+  if (el.validity.typeMismatch && el.type === 'email') return 'Escribe un email válido, por ejemplo nombre@correo.com.'
+  return 'Revisa este dato.'
+}
 
 export default function Cita() {
   useTitle('Pide tu cita')
   const [enviado, setEnviado] = useState(false)
+  const [errores, setErrores] = useState({})
   const reduce = useReducedMotion()
+
+  function limpiarError(nombre) {
+    setErrores((prev) => {
+      if (!(nombre in prev)) return prev
+      const { [nombre]: _fuera, ...resto } = prev
+      return resto
+    })
+  }
 
   function handleSubmit(e) {
     e.preventDefault()
-    if (e.target.reportValidity()) setEnviado(true)
+    const form = e.target
+    const nuevos = {}
+    for (const nombre of ['nombre', 'telefono', 'email']) {
+      const el = form.elements[nombre]
+      if (!el.checkValidity()) nuevos[nombre] = mensajeError(el)
+    }
+    setErrores(nuevos)
+    if (Object.keys(nuevos).length === 0) {
+      setEnviado(true)
+    } else {
+      form.elements[Object.keys(nuevos)[0]].focus()
+    }
   }
 
   return (
@@ -68,24 +96,67 @@ export default function Cita() {
                 </button>
               </motion.div>
             ) : (
-              <form className="grid gap-4" onSubmit={handleSubmit}>
+              <form className="grid gap-4" onSubmit={handleSubmit} noValidate>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className="block text-sm font-medium text-ink">
                     Nombre y apellidos
-                    <input name="nombre" type="text" required autoComplete="name" className={field} />
+                    <input
+                      name="nombre"
+                      type="text"
+                      required
+                      autoComplete="name"
+                      aria-invalid={!!errores.nombre}
+                      aria-describedby={errores.nombre ? 'err-nombre' : undefined}
+                      onChange={() => limpiarError('nombre')}
+                      className={field(errores.nombre)}
+                    />
+                    {errores.nombre && (
+                      <span id="err-nombre" className="mt-1 block text-xs font-normal normal-case text-accent">
+                        {errores.nombre}
+                      </span>
+                    )}
                   </label>
                   <label className="block text-sm font-medium text-ink">
                     Teléfono
-                    <input name="telefono" type="tel" required autoComplete="tel" inputMode="tel" className={field} />
+                    <input
+                      name="telefono"
+                      type="tel"
+                      required
+                      autoComplete="tel"
+                      inputMode="tel"
+                      aria-invalid={!!errores.telefono}
+                      aria-describedby={errores.telefono ? 'err-telefono' : undefined}
+                      onChange={() => limpiarError('telefono')}
+                      className={field(errores.telefono)}
+                    />
+                    {errores.telefono && (
+                      <span id="err-telefono" className="mt-1 block text-xs font-normal normal-case text-accent">
+                        {errores.telefono}
+                      </span>
+                    )}
                   </label>
                 </div>
                 <label className="block text-sm font-medium text-ink">
                   Email
-                  <input name="email" type="email" required autoComplete="email" className={field} />
+                  <input
+                    name="email"
+                    type="email"
+                    required
+                    autoComplete="email"
+                    aria-invalid={!!errores.email}
+                    aria-describedby={errores.email ? 'err-email' : undefined}
+                    onChange={() => limpiarError('email')}
+                    className={field(errores.email)}
+                  />
+                  {errores.email && (
+                    <span id="err-email" className="mt-1 block text-xs font-normal normal-case text-accent">
+                      {errores.email}
+                    </span>
+                  )}
                 </label>
                 <label className="block text-sm font-medium text-ink">
                   Servicio
-                  <select name="servicio" className={field} defaultValue="Graduación de la vista">
+                  <select name="servicio" className={field(false)} defaultValue="Graduación de la vista">
                     <option>Graduación de la vista</option>
                     <option>Adaptación de lentes de contacto</option>
                     <option>Gafas de sol graduadas</option>
@@ -96,11 +167,11 @@ export default function Cita() {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className="block text-sm font-medium text-ink">
                     Fecha preferida
-                    <input name="fecha" type="date" className={field} />
+                    <input name="fecha" type="date" className={field(false)} />
                   </label>
                   <label className="block text-sm font-medium text-ink">
                     Franja
-                    <select name="franja" className={field} defaultValue="Indiferente">
+                    <select name="franja" className={field(false)} defaultValue="Indiferente">
                       <option>Mañana</option>
                       <option>Tarde</option>
                       <option>Indiferente</option>
@@ -109,8 +180,13 @@ export default function Cita() {
                 </div>
                 <label className="block text-sm font-medium text-ink">
                   Algo que debamos saber <span className="font-normal text-ink-soft">(opcional)</span>
-                  <textarea name="mensaje" rows={3} className={field} />
+                  <textarea name="mensaje" rows={3} className={field(false)} />
                 </label>
+                {Object.keys(errores).length > 0 && (
+                  <p role="alert" className="text-sm font-medium text-accent">
+                    Falta completar algún dato — revisa los campos marcados arriba.
+                  </p>
+                )}
                 <button
                   type="submit"
                   className="afterimage mt-1 inline-flex items-center justify-center rounded-full bg-accent px-6 py-3 text-[15px] font-semibold text-bg transition hover:bg-accent-dark"
