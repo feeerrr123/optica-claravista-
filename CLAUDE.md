@@ -97,6 +97,13 @@ Las 6 páginas rediseñadas con la dirección "La línea de puntos". Build OK,
 `detect.mjs` limpio. Revisión de acabado hecha en el hilo (el harness no tiene el
 subagente `impeccable-finish-reviewer`).
 
+Revisión crítica completa hecha y corregida: contraste AA del acento
+(`--c-accent`), validación propia en el formulario de Cita, `aria-live` en los
+juegos, meta-descripción por página + `robots.txt`, toggle de montura ya no
+decorativo, banda de cifras con filete en vez de grid genérico. Demo lista
+para pitch en cuanto a diseño/código; sigue faltando rellenar datos reales
+(ver Pendiente).
+
 ## Pendiente
 
 - [ ] Rellenar marcadores con datos de una óptica real para el pitch.
