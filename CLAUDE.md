@@ -48,8 +48,37 @@ src/
     media.js          fotos Unsplash (verificadas) + catálogo de monturas
   games/              juegos para la vista (ver abajo)
   lib/juegos.js       estado (localStorage) + puntuación + veredicto
+  lib/horario.js      horario de apertura + huecos de cita (ver Cita abajo)
+  components/Agenda.jsx  calendario de la página de Cita (ver abajo)
   pages/              Home · Servicios · Monturas · Juegos · Nosotros · Cita · Contacto
 ```
+
+## Pide cita (`/cita`) — flujo de 3 pasos
+
+`src/pages/Cita.jsx` ya no es un formulario suelto: es **datos → calendario →
+confirmación**, con un stepper igual en estilo al de Juegos.
+
+1. **Tus datos**: nombre, teléfono, email, servicio, mensaje. Validación propia
+   (no `noValidate` del navegador). Al enviar, se guardan en estado (`datos`) y
+   se pasa al paso 2 — no hay envío real todavía.
+2. **Día y hora**: `<Agenda>` (`src/components/Agenda.jsx`). Tira horizontal de
+   los próximos 12 días **abiertos** (salta domingos) y, debajo, la rejilla de
+   huecos del día elegido. La duración de la cita sale del servicio elegido en
+   el paso 1 (`Adaptación de lentes de contacto` → 45 min, el resto → 30) y se
+   lo pasa a `huecosDelDia`.
+3. **Confirmación**: resumen en una frase ("Nombre, para *servicio* el *día* a
+   las *hora*") + el aviso de siempre de que es demo. Desde aquí se puede
+   volver a cambiar hora (conserva los datos) o pedir otra cita (reinicia todo).
+
+`src/lib/horario.js` es la fuente de verdad del horario:
+**L–V 9:30–13:30 y 16:30–19:00 · Sábado 10:00–13:00 · Domingo cerrado.**
+Los huecos "ya ocupados" salen de un hash determinista sobre fecha+hora (sin
+backend, pero consistentes entre recargas) — no son reservas reales. Si cambia
+el horario de la óptica, se toca solo `TRAMOS` en ese archivo.
+
+Aviso: `role="status" aria-live="polite"` (`anuncio` en `Cita.jsx`) anuncia cada
+cambio de paso, igual que en Juegos — mantiene el mismo patrón de accesibilidad
+en todo el sitio.
 
 ## Juegos para la vista (`/juegos`)
 
@@ -109,6 +138,8 @@ para pitch en cuanto a diseño/código; sigue faltando rellenar datos reales
 - [ ] Rellenar marcadores con datos de una óptica real para el pitch.
 - [ ] Sustituir fotos de muestra por fotos reales del cliente.
 - [ ] Mapa real en Contacto (embed).
-- [ ] Conectar el formulario de cita (Supabase / Formspree).
+- [ ] Conectar el formulario de cita + el calendario a un backend real
+      (Supabase: guardar la reserva y marcar el hueco como ocupado de verdad,
+      no con el hash de `horario.js`) o a un gestor de citas ya existente.
 - [ ] Revisar `DotField` en anchos intermedios (trazos anchos en bandas apaisadas).
 - [ ] Confirmar el deploy de Vercel conectado al repo.
