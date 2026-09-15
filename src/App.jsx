@@ -6,6 +6,7 @@ import Servicios from './pages/Servicios.jsx'
 import Monturas from './pages/Monturas.jsx'
 import Nosotros from './pages/Nosotros.jsx'
 import Cita from './pages/Cita.jsx'
+import GestionarCita from './pages/GestionarCita.jsx'
 import Contacto from './pages/Contacto.jsx'
 import Juegos from './pages/Juegos.jsx'
 
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="/juegos" element={<Juegos />} />
         <Route path="/nosotros" element={<Nosotros />} />
         <Route path="/cita" element={<Cita />} />
+        <Route path="/cita/gestionar/:token" element={<GestionarCita />} />
         <Route path="/contacto" element={<Contacto />} />
         <Route path="*" element={<Home />} />
       </Routes>

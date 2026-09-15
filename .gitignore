@@ -7,3 +7,8 @@ dist-ssr
 *.log
 
 .vercel
+
+# Secretos — nunca subir claves reales al repo.
+.env
+.env.*
+!.env.example

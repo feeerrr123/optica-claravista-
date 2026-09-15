@@ -70,3 +70,39 @@ export const formatoDiaCorto = (fecha) => ({
 
 export const formatoDiaLargo = (fecha) =>
   sinPunto(fecha.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }))
+
+// 'YYYY-MM-DD' en el calendario LOCAL del visitante (no usar toISOString: eso
+// pasa a UTC y en España puede devolver el día anterior de madrugada).
+export const fechaISO = (fecha) => `${fecha.getFullYear()}-${pad(fecha.getMonth() + 1)}-${pad(fecha.getDate())}`
+
+/* ── Ventana de 12h para cambiar/cancelar — misma lógica en cliente y servidor ──
+ * Se compara todo como "hora de pared de Madrid" para no depender de en qué
+ * huso horario corre el proceso (el servidor de Vercel corre en UTC). Un
+ * cambio de hora oficial justo en las 12h del límite puede desviarse una
+ * hora; aceptable para una demo, a revisar si esto pasa a producción. */
+const ZONA = 'Europe/Madrid'
+const VENTANA_MS = 12 * 60 * 60 * 1000
+
+function comoInstante(fechaISOStr, horaHHMM) {
+  return new Date(`${fechaISOStr}T${horaHHMM}:00Z`).getTime()
+}
+
+function ahoraEnZona() {
+  const partes = new Intl.DateTimeFormat('en-CA', {
+    timeZone: ZONA,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).formatToParts(new Date())
+  const p = Object.fromEntries(partes.map((x) => [x.type, x.value]))
+  return comoInstante(`${p.year}-${p.month}-${p.day}`, `${p.hour}:${p.minute}`)
+}
+
+// ¿Se puede cambiar/cancelar todavía? (quedan más de 12h para la cita)
+export function puedeGestionar(fechaISOStr, horaHHMM) {
+  return ahoraEnZona() < comoInstante(fechaISOStr, horaHHMM) - VENTANA_MS
+}

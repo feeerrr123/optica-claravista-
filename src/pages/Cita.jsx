@@ -4,7 +4,8 @@ import PageTransition from '../components/PageTransition.jsx'
 import Container from '../components/Container.jsx'
 import Agenda from '../components/Agenda.jsx'
 import useTitle from '../lib/useTitle.js'
-import { formatoDiaLargo } from '../lib/horario.js'
+import { formatoDiaLargo, fechaISO } from '../lib/horario.js'
+import { peticionJSON } from '../lib/api.js'
 
 const field = (invalido) =>
   `mt-1.5 w-full rounded-lg border bg-surface px-3 py-2.5 text-[15px] text-ink outline-none transition focus:border-accent focus:ring-2 focus:ring-accent/20 ${
@@ -63,6 +64,7 @@ export default function Cita() {
   const [paso, setPaso] = useState('form')
   const [datos, setDatos] = useState(null)
   const [cita, setCita] = useState(null)
+  const [resultado, setResultado] = useState(null)
   const [errores, setErrores] = useState({})
   const [anuncio, setAnuncio] = useState('')
   const reduce = useReducedMotion()
@@ -102,10 +104,19 @@ export default function Cita() {
     }
   }
 
-  function handleElegirCita({ fecha, hora }) {
+  async function handleElegirCita({ fecha, hora }) {
+    const fechaStr = fechaISO(fecha)
+    const yaReservada = resultado?.token // venimos de "cambiar día u hora" sobre una reserva real
+    const respuesta = await peticionJSON(yaReservada ? `/api/citas/${resultado.token}` : '/api/citas', {
+      method: yaReservada ? 'PATCH' : 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(yaReservada ? { ...datos, fecha: fechaStr, hora } : { ...datos, fecha: fechaStr, hora, duracion }),
+    })
+
+    setResultado((prev) => (yaReservada ? { ...prev, ...respuesta } : respuesta)) // { demo, token, emailEnviado }
     setCita({ fecha, hora })
     setPaso('confirmado')
-    setAnuncio(`Cita solicitada para el ${formatoDiaLargo(fecha)} a las ${hora}.`)
+    setAnuncio(`Cita ${yaReservada ? 'actualizada' : 'solicitada'} para el ${formatoDiaLargo(fecha)} a las ${hora}.`)
   }
 
   function volverADatos() {
@@ -123,6 +134,7 @@ export default function Cita() {
     setPaso('form')
     setDatos(null)
     setCita(null)
+    setResultado(null)
     setErrores({})
     setAnuncio('')
   }
@@ -285,16 +297,30 @@ export default function Cita() {
                 <span className="mx-auto grid h-14 w-14 place-items-center rounded-full border border-accent text-accent">
                   <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M5 13l4 4L19 7" /></svg>
                 </span>
-                <h2 className="mt-5 font-display text-2xl text-ink">Cita solicitada</h2>
+                <h2 className="mt-5 font-display text-2xl text-ink">Cita confirmada</h2>
                 <p className="measure mx-auto mt-2 text-[15px] leading-relaxed text-ink">
                   {datos.nombre}, para <strong>{datos.servicio.toLowerCase()}</strong> el{' '}
                   <strong>{formatoDiaLargo(cita.fecha)}</strong> a las <strong className="font-mono">{cita.hora}</strong>.
                 </p>
-                <p className="measure mx-auto mt-2 text-[15px] leading-relaxed text-ink-soft">
-                  Te llamamos al {datos.telefono} para confirmarlo.
-                  <span className="mt-2 block font-mono text-xs text-accent">(Demo: no se ha enviado nada.)</span>
-                </p>
+                {resultado?.demo ? (
+                  <p className="measure mx-auto mt-2 text-[15px] leading-relaxed text-ink-soft">
+                    Te llamamos al {datos.telefono} para confirmarlo.
+                    <span className="mt-2 block font-mono text-xs text-accent">(Demo: no se ha enviado ni guardado nada todavía.)</span>
+                  </p>
+                ) : (
+                  <p className="measure mx-auto mt-2 text-[15px] leading-relaxed text-ink-soft">
+                    {resultado?.emailEnviado
+                      ? `Te hemos enviado un email a ${datos.email} con un enlace para cambiarla o cancelarla.`
+                      : 'Guardada en la agenda. Guarda esta página si necesitas cambiarla o cancelarla luego.'}
+                    {' '}Hasta 12h antes de la hora, puedes hacerlo tú mismo sin llamarnos.
+                  </p>
+                )}
                 <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+                  {resultado?.token && (
+                    <a href={`/cita/gestionar/${resultado.token}`} className="text-sm font-semibold text-accent hover:text-accent-dark">
+                      Gestionar esta cita
+                    </a>
+                  )}
                   <button onClick={volverAAgenda} className="text-sm font-semibold text-accent hover:text-accent-dark">
                     Cambiar día u hora
                   </button>
