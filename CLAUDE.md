@@ -36,7 +36,7 @@ src/
     Layout.jsx        Navbar + Footer + Chatbot + skip-link
     Navbar.jsx        sticky, filete inferior, menú móvil, "Pide cita" aislada
     Footer.jsx        hairlines, horario en mono
-    Chatbot.jsx       widget flotante, FAQ predefinidas (sin IA), datos en chatbot.js
+    Chatbot.jsx       widget flotante con IA real (Gemini), ver sección propia abajo
     DotField.jsx      ★ el dispositivo: lámina de puntos que se resuelve en `text`
     Photo.jsx         foto con ratio fijo, ring, filtro cálido, carga diferida
     PageTransition.jsx  fade+12px al montar (sin exit)
@@ -114,7 +114,9 @@ scripts/autorizar-google.mjs  autorización de Google Calendar (se corre EN TU m
 copiar `.env.example` a `.env.local`, nunca subir el real): `SUPABASE_URL`,
 `SUPABASE_SERVICE_ROLE_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`,
 `GOOGLE_REFRESH_TOKEN`, `GOOGLE_CALENDAR_ID`, `RESEND_API_KEY`, `RESEND_FROM`,
-`APP_BASE_URL`, `TELEFONO_CONTACTO`.
+`APP_BASE_URL`, `TELEFONO_CONTACTO`, `GEMINI_API_KEY` (esta última para el
+asistente con IA, ver su sección propia más abajo — Google AI Studio,
+aistudio.google.com, gratis).
 
 **Puesta en marcha** (por orden):
 1. Supabase: crear proyecto → pegar `supabase/schema.sql` en el SQL Editor →
@@ -141,6 +143,62 @@ la app a producción (verificación de Google) o meter Zapier/Make en medio
 (`peticionJSON` en `src/lib/api.js` comprueba el `Content-Type`) y falla con
 un aviso en vez de fingir éxito. Para probar el flujo de verdad hace falta
 `vercel dev` (necesita `vercel login`) o la web ya desplegada en Vercel.
+
+## Asistente con IA (`Chatbot.jsx`, flotante en toda la web)
+
+El chatbot ya no es un guion fijo de preguntas y respuestas — responde de
+verdad con **Gemini (API gratuita de Google)**, vía la **Interactions API**
+(la interfaz que Google recomienda desde junio de 2026; la antigua
+`generateContent` sigue funcionando pero ya no es la recomendada — si se
+retoca esto en el futuro, comprobar la documentación oficial antes de copiar
+ejemplos viejos).
+
+- `src/data/chatbot.js` — solo el saludo inicial y las preguntas sugeridas
+  que aparecen como chips al abrir el chat (antes tenían también la
+  respuesta fija; ya no hace falta, la genera el modelo).
+- `src/components/Chatbot.jsx` — input de texto libre + chips de preguntas
+  sugeridas (solo visibles antes del primer mensaje). Llama a
+  `POST /api/chat` con `{ mensaje, interactionId }` vía `peticionJSON`;
+  guarda el `interactionId` que devuelve Gemini para mantener el hilo de la
+  conversación entre mensajes (no reenviamos el historial completo, Google
+  lo guarda del lado del servidor).
+- `api/chat.js` — valida el mensaje (no vacío, máx. 500 caracteres) y llama a
+  `responderChat()`. Si `GEMINI_API_KEY` no está configurada, responde en
+  "modo demo" con un aviso, igual que el resto del backend.
+- `api/_lib/gemini.js` — construye la instrucción de sistema con los datos
+  reales de la óptica (horario derivado de `horarioTexto()` en `horario.js`,
+  para que nunca se desincronice como le pasó al guion viejo; servicios
+  resumidos a mano porque `servicios.jsx` tiene JSX y no se puede importar
+  desde una función de servidor en Node puro) y llama a
+  `ai.interactions.create({ model, input, system_instruction,
+  previous_interaction_id })` con el SDK oficial `@google/genai`.
+
+**Regla dura, no negociable**: el asistente contesta dudas oculares
+generales (ej. "¿es normal no ver bien mi móvil de cerca?") de forma
+educativa, pero **nunca diagnostica** y siempre remite a pedir cita para
+saber de verdad qué pasa — mismo espíritu que el `<Aviso>` de los Juegos.
+Además, tiene una regla explícita de derivar a urgencias médicas de verdad
+ante síntomas que suenen graves (pérdida de visión repentina, destellos de
+luz nuevos, dolor ocular fuerte, trauma) — probado en local antes de
+desplegar y responde correctamente. La instrucción completa está en
+`construirInstruccion()` dentro de `api/_lib/gemini.js`; cualquier cambio de
+tono o alcance se toca ahí, en un único sitio.
+
+**Por qué Gemini y no Claude aquí**: cuota gratuita mucho más generosa para
+un volumen bajo (un chatbot de una óptica de barrio), que encaja con el
+resto de la infraestructura (todo pensado para aguantar en el nivel
+gratuito el mayor tiempo posible). Si en el futuro se añade una Fase 2 (que
+el propio chatbot reserve la cita, con function calling contra
+`/api/citas`), conviene revisar si la fiabilidad de Gemini seguir
+instrucciones complejas es suficiente para esa acción con consecuencias
+reales, o si compensa cambiar de modelo para esa pieza en concreto.
+
+**Sin probar en producción todavía**: probado en local contra la API real de
+Gemini (llamada directa, sin pasar por `/api`, porque `npm run dev` no
+ejecuta funciones de servidor) — funciona, con horario correcto y las dos
+reglas de seguridad (no diagnóstico, derivar a urgencias) comportándose bien.
+Falta pegar `GEMINI_API_KEY` en Vercel y volver a desplegar para probarlo de
+verdad end-to-end en el sitio público.
 
 ## Juegos para la vista (`/juegos`)
 
@@ -193,31 +251,49 @@ Revisión crítica completa hecha y corregida: contraste AA del acento
 juegos, meta-descripción por página + `robots.txt`, toggle de montura ya no
 decorativo, banda de cifras con filete en vez de grid genérico.
 
-**Backend de citas construido** (Supabase + Google Calendar + Resend, ver
-sección "Pide cita" arriba): código completo, build limpio, detector limpio,
-lógica de negocio probada directamente en Node (modo demo, huecos inválidos,
-ventana de 12h) sin necesitar credenciales todavía. **Sin probar en vivo**:
-falta que el usuario haga la parte que solo puede hacer él (crear el proyecto
-de Supabase, autorizar Google Calendar con `autorizar:google`, crear la cuenta
-de Resend) y pegar las variables en Vercel. Hasta entonces, la web sigue
-funcionando en modo demo para cualquiera que la visite.
+**Backend de citas: Supabase, Google Calendar y Resend verificados en vivo en
+producción** (ver sección "Pide cita" arriba) — el checklist de puesta en
+marcha está cerrado del todo. Reserva real de prueba hecha en `/cita` en el
+sitio desplegado: se guardó en la tabla `citas` de Supabase (confirmado en el
+Table Editor), creó el evento en el Google Calendar de la cuenta autorizada
+(confirmado visualmente) y llegó el email de confirmación (a spam la primera
+vez — normal con el remitente de pruebas `onboarding@resend.dev` sin dominio
+propio verificado).
+
+Un par de tropiezos reales durante la puesta en marcha, por si se repiten con
+otro cliente: (1) al añadir las env vars a mano en Vercel es fácil escribir
+mal el nombre de la key (pasó con `SUPABASE_KEY` en vez de `SUPABASE_URL`) —
+mejor pegar todas de golpe en formato `.env` en el campo "Key" del modal de
+Vercel, que las separa solo; (2) `googleapis` devuelve `invalid_client` si el
+Client ID/Secret no coinciden exactamente con los de Google Cloud — un
+carácter mal copiado basta (nos pasó con una "I" mayúscula confundida con
+"l" minúscula). Se depura mirando **Vercel → Deployments → [el deploy] →
+Logs**, filtrando por Error: ahí aparece el `console.error` con el motivo
+exacto (`[google] no se pudo crear el evento: ...`).
 
 ## Pendiente
 
 - [ ] Rellenar marcadores con datos de una óptica real para el pitch.
 - [ ] Sustituir fotos de muestra por fotos reales del cliente.
 - [ ] Mapa real en Contacto (embed).
-- [ ] Crear el proyecto de Supabase real y pegar `supabase/schema.sql`.
-- [ ] Crear el proyecto de Google Cloud y correr `npm run autorizar:google`
+- [x] Crear el proyecto de Supabase real y pegar `supabase/schema.sql`.
+- [x] Crear el proyecto de Google Cloud y correr `npm run autorizar:google`
       con el calendario de prueba (ver checklist en "Pide cita" arriba).
-- [ ] Crear cuenta de Resend y pegar la API key.
-- [ ] Pegar las 10 variables de entorno en Vercel y volver a desplegar.
-- [ ] Probar el flujo entero en vivo: reservar → ver el evento en Google
-      Calendar → recibir el email → cambiar la cita → cancelarla → confirmar
-      que pasadas las 12h el servidor bloquea el cambio (probar con una cita
-      a <12h para verlo de verdad, no solo confiar en el test de Node).
+- [x] Crear cuenta de Resend y pegar la API key.
+- [x] Probar el flujo entero en vivo: reservar, cambiar día/hora y cancelar,
+      confirmando en cada paso que Supabase y Google Calendar reflejan bien
+      el cambio (evento movido, no duplicado; fila en `estado='cancelada'`,
+      no borrada) y que llega el email. Todo probado en producción y OK.
+      El bloqueo real a <12h sigue solo probado a nivel de lógica
+      (`puedeGestionar()`, test de Node: +13h permite, +6h bloquea) — probarlo
+      en vivo con una cita real a menos de 12h es opcional, no bloqueante.
 - [ ] Decidir, antes de vender esto a un cliente real: ¿verificar la app ante
       Google, o meter Zapier/Make en medio? (ver la conversación sobre esto:
       en modo prueba el token de Google caduca cada 7 días).
+- [ ] Pegar `GEMINI_API_KEY` en Vercel y volver a desplegar — probado en
+      local contra la API real (ver sección "Asistente con IA" arriba), pero
+      falta la prueba end-to-end en el sitio público a través de `/api/chat`.
+- [ ] Panel privado del dueño (`/admin`, con login de Supabase Auth) — sobre
+      la mesa como siguiente proyecto grande, todavía sin empezar.
 - [ ] Revisar `DotField` en anchos intermedios (trazos anchos en bandas apaisadas).
 - [ ] Confirmar el deploy de Vercel conectado al repo.

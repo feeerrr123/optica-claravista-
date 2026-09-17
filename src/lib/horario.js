@@ -17,6 +17,26 @@ export const DURACION_DEFECTO = 30 // minutos
 const pad = (n) => String(n).padStart(2, '0')
 const minutosAHora = (m) => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`
 
+const formatoTramos = (tramos) =>
+  tramos.length ? tramos.map(([ini, fin]) => `${minutosAHora(ini)}-${minutosAHora(fin)}`).join(' y ') : 'cerrado'
+
+const igualTramos = (a, b) => JSON.stringify(a) === JSON.stringify(b)
+
+// Horario en texto legible, derivado de TRAMOS — nunca hay que repetirlo a
+// mano en otro sitio (chatbot, etc.): así no se desincroniza si cambia aquí.
+export function horarioTexto() {
+  const partes = []
+  if ([2, 3, 4, 5].every((d) => igualTramos(TRAMOS[d], TRAMOS[1]))) {
+    partes.push(`Lunes a viernes: ${formatoTramos(TRAMOS[1])}`)
+  } else {
+    const dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado']
+    for (const d of [1, 2, 3, 4, 5]) partes.push(`${dias[d]}: ${formatoTramos(TRAMOS[d])}`)
+  }
+  partes.push(`Sábado: ${formatoTramos(TRAMOS[6])}`)
+  partes.push(`Domingo: ${formatoTramos(TRAMOS[0])}`)
+  return partes.join(' · ')
+}
+
 export function abierto(fecha) {
   return (TRAMOS[fecha.getDay()] || []).length > 0
 }

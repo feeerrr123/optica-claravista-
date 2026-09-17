@@ -10,6 +10,7 @@
     "autorizar:google": "node scripts/autorizar-google.mjs"
   },
   "dependencies": {
+    "@google/genai": "^2.3.0",
     "@supabase/supabase-js": "^2.47.10",
     "framer-motion": "^11.15.0",
     "googleapis": "^144.0.0",

@@ -13,11 +13,13 @@ export const cfg = {
   resendFrom: process.env.RESEND_FROM || 'Óptica Claravista <onboarding@resend.dev>',
   appBaseUrl: process.env.APP_BASE_URL || '',
   telefonoContacto: process.env.TELEFONO_CONTACTO || '[teléfono]',
+  geminiApiKey: process.env.GEMINI_API_KEY || '',
 }
 
 export const supabaseListo = () => !!(cfg.supabaseUrl && cfg.supabaseServiceKey)
 export const googleListo = () => !!(cfg.googleClientId && cfg.googleClientSecret && cfg.googleRefreshToken)
 export const emailListo = () => !!cfg.resendApiKey
+export const geminiListo = () => !!cfg.geminiApiKey
 
 // "Modo demo" = falta Supabase (es la pieza sin la que no hay ni reserva que
 // gestionar). Google Calendar y el email son best-effort: si fallan, la cita
