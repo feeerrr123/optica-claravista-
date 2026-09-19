@@ -51,6 +51,10 @@ src/
   lib/horario.js      horario de apertura + huecos de cita (ver Cita abajo)
   components/Agenda.jsx  calendario de la página de Cita (ver abajo)
   pages/              Home · Servicios · Monturas · Juegos · Nosotros · Cita · Contacto
+docs/prompts/         biblioteca de prompts reutilizables (citas, asistente IA, animación
+                      de puntos, juegos) + README con el preámbulo común. Al cambiar
+                      cualquiera de esas herramientas, actualizar su archivo (sobre todo
+                      "Tropiezos reales").
 ```
 
 ## Pide cita (`/cita`) — flujo de 3 pasos, con backend real
