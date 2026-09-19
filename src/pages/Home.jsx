@@ -261,6 +261,8 @@ export default function Home() {
       <section>
         <DotField
           text="CITA"
+          pulso
+          interactivo
           className="h-[30vh] min-h-[220px] w-full sm:h-[36vh]"
           ariaLabel="Campo de puntos en el que se lee «CITA»"
         />

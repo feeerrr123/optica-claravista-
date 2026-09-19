@@ -235,12 +235,12 @@ Tailwind: `bg-bg`, `text-ink`, `border-line`, `bg-accent`, `text-accent/60`, etc
   Chatbot y menú móvil usan `AnimatePresence` (modo sync) porque están fuera de rutas.
 - **DotField:** siempre debe acabar pintando el mensaje legible. No quitar la red
   de seguridad (`setTimeout` que fuerza `paint(1)`), ni el camino `reduced-motion`.
-  La prop `pulso` (solo activa en el "VES" de la portada) hace que los puntos rojos
+  La prop `pulso` (activa en el "VES" de la portada y en el "CITA" del final de Home) hace que los puntos rojos
   latan de intenso a claro cada ~2,6 s una vez resuelta la lámina: `PULSE_DEPTH` es
   el tope de cuánto se aclaran — subirlo hasta acercarse a 1 haría que el rojo se
   confunda con el fondo y se pierda la palabra. Solo corre con movimiento permitido,
   pestaña visible y lámina en pantalla.
-  La prop `interactivo` (también solo en el "VES" de la portada) hace que el cursor
+  La prop `interactivo` (en los mismos dos sitios) hace que el cursor
   o el dedo aparten los puntos cercanos (repulsión + muelle, `PUSH`/`SPRING`/`DAMP`)
   y los iluminen (`GLOW`). Es siempre transitorio: en reposo todos los offsets son
   exactamente 0. No quitar `snapBack` (temporizador de 1,6 s que devuelve todo a su
