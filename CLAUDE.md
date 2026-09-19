@@ -235,6 +235,22 @@ Tailwind: `bg-bg`, `text-ink`, `border-line`, `bg-accent`, `text-accent/60`, etc
   Chatbot y menú móvil usan `AnimatePresence` (modo sync) porque están fuera de rutas.
 - **DotField:** siempre debe acabar pintando el mensaje legible. No quitar la red
   de seguridad (`setTimeout` que fuerza `paint(1)`), ni el camino `reduced-motion`.
+  La prop `pulso` (solo activa en el "VES" de la portada) hace que los puntos rojos
+  latan de intenso a claro cada ~2,6 s una vez resuelta la lámina: `PULSE_DEPTH` es
+  el tope de cuánto se aclaran — subirlo hasta acercarse a 1 haría que el rojo se
+  confunda con el fondo y se pierda la palabra. Solo corre con movimiento permitido,
+  pestaña visible y lámina en pantalla.
+  La prop `interactivo` (también solo en el "VES" de la portada) hace que el cursor
+  o el dedo aparten los puntos cercanos (repulsión + muelle, `PUSH`/`SPRING`/`DAMP`)
+  y los iluminen (`GLOW`). Es siempre transitorio: en reposo todos los offsets son
+  exactamente 0. No quitar `snapBack` (temporizador de 1,6 s que devuelve todo a su
+  sitio si el bucle se atasca con puntos desplazados) ni el gate de
+  `prefers-reduced-motion`. Los eventos son de puntero sin `preventDefault`, para
+  no romper el scroll vertical en móvil.
+  En el panel de vista previa de Claude `requestAnimationFrame` no dispara, así que
+  allí ni el latido ni la interacción se ven: para probarlos, sustituir
+  `requestAnimationFrame` por un `setTimeout`, volver a montar la portada
+  (navegar a otra ruta y volver) y lanzar `PointerEvent` sobre el contenedor.
 - **División por filete de 1px, nunca sombra de tarjeta.** Sin eyebrow/kicker
   sobre los titulares.
 - **Fotos:** todas son stock marcado para sustituir (`media.js`). No usar como

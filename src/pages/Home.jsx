@@ -72,6 +72,8 @@ export default function Home() {
       <section>
         <DotField
           text="VES"
+          pulso
+          interactivo
           className="h-[38vh] min-h-[260px] w-full sm:h-[46vh] sm:min-h-[380px]"
           ariaLabel="Campo de puntos de colores en el que se lee «VES»"
         />
